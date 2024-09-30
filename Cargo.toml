@@ -6,3 +6,11 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix-web = "4.0"               # Web framework
+actix-cors = "0.6"              # CORS support
+jsonwebtoken = "8.0"            # JWT authentication
+tokio = { version = "1", features = ["full"] }  # Async runtime for WebSocket
+web3 = "0.17"                   # Web3 integration to interact with Ethereum
+serde = { version = "1.0", features = ["derive"] }  # JSON serialization
+futures = "0.3"                 # For handling asynchronous code
+dotenv = "0.15"                 # For environment variables
