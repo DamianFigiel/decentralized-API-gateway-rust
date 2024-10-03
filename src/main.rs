@@ -1,6 +1,7 @@
 use actix_web::{get, post, web, App, HttpServer, HttpResponse, HttpRequest, Responder, Error};
 use serde::{Serialize, Deserialize};
 mod jwt;
+mod ws_handler;
 
 #[derive(Serialize, Deserialize)]
 struct AuthRequest {
@@ -41,6 +42,11 @@ async fn secure(req: HttpRequest) -> Result<HttpResponse, Error> {
     }
 }
 
+#[get("/ws")]
+async fn websocket_route(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
+    ws_handler::ws_index(req, stream).await
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     println!("Decentralized API Gateway is listening on port 9090");
@@ -50,6 +56,7 @@ async fn main() -> std::io::Result<()> {
             .service(index)
             .service(auth)
             .service(secure)
+            .service(websocket_route)
     })
     .bind("127.0.0.1:9090")?
     .run()

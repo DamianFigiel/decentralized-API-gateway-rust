@@ -6,7 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+actix = "0.13.5"                   # Actor framework
 actix-web = "4.0"               # Web framework
+actix-web-actors = "4.0"        # Actors for WebSocket
 actix-cors = "0.6"              # CORS support
 jsonwebtoken = "8.0"            # JWT authentication
 tokio = { version = "1", features = ["full"] }  # Async runtime for WebSocket
