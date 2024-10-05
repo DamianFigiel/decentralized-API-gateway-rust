@@ -1,7 +1,11 @@
 use actix_web::{get, post, web, App, HttpServer, HttpResponse, HttpRequest, Responder, Error};
 use serde::{Serialize, Deserialize};
+use dotenv::dotenv;
+use std::env;
+
 mod jwt;
 mod ws_handler;
+mod blockchain;
 
 #[derive(Serialize, Deserialize)]
 struct AuthRequest {
@@ -47,9 +51,21 @@ async fn websocket_route(req: HttpRequest, stream: web::Payload) -> Result<HttpR
     ws_handler::ws_index(req, stream).await
 }
 
+#[get("/ethereum/latest_block")]
+async fn latest_ethereum_block() -> impl Responder {
+    match blockchain::get_latest_ethereum_block().await {
+        Ok(block_number) => HttpResponse::Ok().body(format!("Latest Ethereum block number: {}", block_number)),
+        Err(e) => HttpResponse::InternalServerError().body(format!("Error fetching Ethereum block: {}", e))
+    }
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    println!("Decentralized API Gateway is listening on port 9090");
+    dotenv().ok();
+
+    let port = env::var("PORT").unwrap_or("9090".to_string());
+
+    println!("Decentralized API Gateway is listening on port {}", port);
 
     HttpServer::new(|| {
         App::new()
@@ -57,8 +73,9 @@ async fn main() -> std::io::Result<()> {
             .service(auth)
             .service(secure)
             .service(websocket_route)
+            .service(latest_ethereum_block)
     })
-    .bind("127.0.0.1:9090")?
+    .bind(format!("127.0.0.1:{}", port))?
     .run()
     .await
 }
